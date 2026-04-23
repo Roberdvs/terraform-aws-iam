@@ -100,6 +100,13 @@ resource "aws_iam_role_policy_attachment" "additional" {
   policy_arn = each.value
 }
 
+resource "aws_iam_role_policy_attachment" "ebs_csi" {
+  count = var.create && var.attach_ebs_csi_policy ? 1 : 0
+
+  role       = aws_iam_role.this[0].name
+  policy_arn = "arn:${local.partition}:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
+
 ################################################################################
 # IAM Policy
 ################################################################################
@@ -111,7 +118,7 @@ locals {
     data.aws_iam_policy_document.aws_gateway_controller[*].json,
     data.aws_iam_policy_document.cert_manager[*].json,
     data.aws_iam_policy_document.cluster_autoscaler[*].json,
-    data.aws_iam_policy_document.ebs_csi[*].json,
+    data.aws_iam_policy_document.ebs_csi_kms[*].json,
     data.aws_iam_policy_document.efs_csi[*].json,
     data.aws_iam_policy_document.mountpoint_s3_csi[*].json,
     data.aws_iam_policy_document.external_dns[*].json,
